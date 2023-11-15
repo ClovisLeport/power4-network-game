@@ -1,4 +1,4 @@
-package main
+package client
 
 // Structure de données pour représenter l'état courant du jeu.
 type game struct {
