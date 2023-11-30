@@ -1,13 +1,44 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"net"
-	"time"
 )
 
-func server() {
-	listener, err := net.Listen("tcp", ":8080")
+func handleClientEnvoiLit(c net.Conn, msg string) {
+	in := bufio.NewReader(c)
+	out := bufio.NewWriter(c)
+
+	_, err := out.WriteString(msg)
+	if err != nil {
+		log.Fatal("Write error: ", err)
+	}
+	out.Flush()
+	log.Println("Sent: ", msg)
+
+	msg_rcv, err := in.ReadString(byte('\n'))
+	if err != nil {
+		log.Fatal("Read error: ", err)
+	}
+	log.Println("Received", msg_rcv)
+}
+
+func handleClientEnvoi(c net.Conn, msg string) {
+
+	out := bufio.NewWriter(c)
+
+	_, err := out.WriteString(msg)
+	if err != nil {
+		log.Fatal("Write error: ", err)
+	}
+	out.Flush()
+	log.Println("Sent: ", msg)
+
+}
+
+func server1() {
+	listener, err := net.Listen("tcp", "localhost:8080")
 	if err != nil {
 		log.Println("listen error:", err)
 		return
@@ -19,15 +50,20 @@ func server() {
 		log.Println("accept error:", err)
 		return
 	}
-
+	log.Println("Le client1 s'est connecté")
+	handleClientEnvoi(conn, "tu es joueur 1")
+	conn2, err := listener.Accept()
+	if err != nil {
+		log.Println("accept error:", err)
+		return
+	}
+	log.Println("Le client2 s'est connecté")
+	handleClientEnvoi(conn2, "tu es joueur 2")
 	defer conn.Close()
-	log.Println("Le client s'est connecté")
-
-	time.Sleep(10 * time.Second)
+	defer conn2.Close()
 
 }
 
 func main() {
-	server()
-
+	server1()
 }

@@ -1,4 +1,4 @@
-package client
+package main
 
 import (
 	"log"
@@ -46,12 +46,12 @@ func handleConnection(c net.Conn) {
 	}
 	log.Println("Received", string(in_buf))
 
-	msg := "pong\n"
-	_, err = c.Write([]byte(msg))
-	if err != nil {
-		log.Fatal("Write error: ", err)
-	}
-	log.Println("Sent: ", msg)
+	// msg := "pong\n"
+	// _, err = c.Write([]byte(msg))
+	// if err != nil {
+	// 	log.Fatal("Write error: ", err)
+	// }
+	// log.Println("Sent: ", msg)
 }
 
 func createClient() {
