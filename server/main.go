@@ -6,16 +6,8 @@ import (
 	"net"
 )
 
-func handleClientEnvoiLit(c net.Conn, msg string) {
+func handleClientRead(c net.Conn, msg string) {
 	in := bufio.NewReader(c)
-	out := bufio.NewWriter(c)
-
-	_, err := out.WriteString(msg)
-	if err != nil {
-		log.Fatal("Write error: ", err)
-	}
-	out.Flush()
-	log.Println("Sent: ", msg)
 
 	msg_rcv, err := in.ReadString(byte('\n'))
 	if err != nil {
@@ -24,7 +16,7 @@ func handleClientEnvoiLit(c net.Conn, msg string) {
 	log.Println("Received", msg_rcv)
 }
 
-func handleClientEnvoi(c net.Conn, msg string) {
+func handleClientWrite(c net.Conn, msg string) {
 
 	out := bufio.NewWriter(c)
 
@@ -52,6 +44,7 @@ func server1() {
 	}
 	log.Println("Le client1 s'est connecté")
 	handleClientEnvoi(conn, "tu es joueur 1")
+
 	conn2, err := listener.Accept()
 	if err != nil {
 		log.Println("accept error:", err)

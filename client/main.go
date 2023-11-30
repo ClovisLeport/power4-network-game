@@ -38,23 +38,27 @@ func init() {
 	offScreenImage = ebiten.NewImage(globalWidth, globalHeight)
 }
 
-func handleConnection(c net.Conn) {
+func handleConnectionWrite(c net.Conn) {
+	msg := "pong\n"
+	_, err := c.Write([]byte(msg))
+	if err != nil {
+		log.Fatal("Write error: ", err)
+	}
+	log.Println("Sent: ", msg)
+}
+
+func handleConnectionRead(c net.Conn) (value string) {
 	in_buf := make([]byte, 64, 256)
 	_, err := c.Read(in_buf)
 	if err != nil {
 		log.Fatal("Read error: ", err)
 	}
 	log.Println("Received", string(in_buf))
+	return string(in_buf)
 
-	// msg := "pong\n"
-	// _, err = c.Write([]byte(msg))
-	// if err != nil {
-	// 	log.Fatal("Write error: ", err)
-	// }
-	// log.Println("Sent: ", msg)
 }
 
-func createClient() {
+func createClient() (numJoueurRet string) {
 	conn, err := net.Dial("tcp", "localhost:8080")
 	if err != nil {
 		log.Println("Dial error:", err)
@@ -63,7 +67,8 @@ func createClient() {
 
 	defer conn.Close()
 	log.Println("Je suis connecté")
-	handleConnection(conn)
+	numJoueur := handleConnectionRead(conn)
+	return numJoueur
 }
 
 // Création, paramétrage et lancement du jeu.
