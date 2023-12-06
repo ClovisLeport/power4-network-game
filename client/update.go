@@ -5,8 +5,28 @@ import (
 	//"log"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	// "log"
+	// "net"
 )
+// func handleConnectionWrite(c net.Conn, msg string) {
 
+// 	_, err := c.Write([]byte(msg))
+// 	if err != nil {
+// 		log.Fatal("Write error: ", err)
+// 	}
+// 	log.Println("Sent: ", msg)
+// }
+
+// func handleConnectionRead(c net.Conn) (value string) {
+// 	in_buf := make([]byte, 64, 256)
+// 	_, err := c.Read(in_buf)
+// 	if err != nil {
+// 		log.Fatal("Read error: ", err)
+// 	}
+// 	log.Println("Received", string(in_buf))
+// 	return string(in_buf)
+
+// }
 // Mise à jour de l'état du jeu en fonction des entrées au clavier.
 func (g *game) Update() error {
 
@@ -114,18 +134,21 @@ func (g *game) p1Update() (int, int) {
 	lastXPositionPlayed := -1
 	lastYPositionPlayed := -1
 	if inpututil.IsKeyJustPressed(ebiten.KeyDown) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+
 		if updated, yPos := g.updateGrid(p1Token, g.tokenPosition); updated {
 			g.turn = p2Turn
 			lastXPositionPlayed = g.tokenPosition
 			lastYPositionPlayed = yPos
 		}
 	}
+	handleConnectionWrite(g.connexion, string(string(lastXPositionPlayed)+"/"+string(lastYPositionPlayed)))
 	return lastXPositionPlayed, lastYPositionPlayed
 }
 
 // Gestion de la position du prochain pion joué par le joueur 2 et
 // du moment où ce pion est joué.
 func (g *game) p2Update() (int, int) {
+	//recupere la position de l'autre joueur
 	position := rand.Intn(globalNumTilesX)
 	updated, yPos := g.updateGrid(p2Token, position)
 	for ; !updated; updated, yPos = g.updateGrid(p2Token, position) {

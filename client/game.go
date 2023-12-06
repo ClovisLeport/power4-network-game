@@ -1,5 +1,5 @@
 package main
-
+import "net"
 // Structure de données pour représenter l'état courant du jeu.
 type game struct {
 	gameState     int
@@ -11,6 +11,7 @@ type game struct {
 	numberPlayer  int
 	tokenPosition int
 	result        int
+	connexion 	  net.Conn
 }
 
 // Constantes pour représenter la séquence de jeu actuelle (écran titre,

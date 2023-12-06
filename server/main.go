@@ -44,7 +44,7 @@ func server1() {
 		return
 	}
 	log.Println("Le client1 s'est connecté")
-	handleClientWrite(conn, "tu es joueur 1")
+	handleClientWrite(conn, "1")
 
 	conn2, err := listener.Accept()
 
@@ -53,11 +53,14 @@ func server1() {
 		return
 	}
 	log.Println("Le client2 s'est connecté")
-	handleClientWrite(conn2, "tu es joueur 2")
+	handleClientWrite(conn2, "2")
 	time.Sleep(1 * time.Second)
+
 	// dit aux deux joueurs que les deux sont connéctés
 	handleClientWrite(conn, "2j")
 	handleClientWrite(conn2, "2j")
+
+	
 
 	defer conn.Close()
 	defer conn2.Close()

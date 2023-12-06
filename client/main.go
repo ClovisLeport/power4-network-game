@@ -74,12 +74,22 @@ func main() {
 
 	ebiten.SetWindowTitle("Programmation système : projet puissance 4")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+
 	conn, err := net.Dial("tcp", "localhost:8080")
+	g.connexion = conn
 	if err != nil {
 		log.Println("Dial error:", err)
 		return
 	}
 	createClient(conn)
+
+	// verifie si c'est le joueur 1 ou 2
+	numPlayer := handleConnectionRead(conn)[:1]
+	if ( numPlayer== "2") {
+		g.turn = p2Turn
+	}
+	log.Println("le tour de : " +string(g.turn))
+	
 	go func() {
 		var Is2Player string = handleConnectionRead(conn)
 		if (string(Is2Player[:2]) == "2j") {
@@ -87,6 +97,8 @@ func main() {
 			g.numberPlayer+=2
 		}
 	}()
+
+
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
 	}
