@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func handleClientRead(c net.Conn) {
+func handleClientRead(c net.Conn) (value string) {
 	in := bufio.NewReader(c)
 
 	msg_rcv, err := in.ReadString(byte('\n'))
@@ -15,6 +15,7 @@ func handleClientRead(c net.Conn) {
 		log.Fatal("Read error: ", err)
 	}
 	log.Println("Received", msg_rcv)
+	return string(msg_rcv)
 }
 
 func handleClientWrite(c net.Conn, msg string) {
@@ -60,8 +61,28 @@ func server1() {
 	handleClientWrite(conn, "2j")
 	handleClientWrite(conn2, "2j")
 
+	PartieFini := true
 	
-
+	go func() {
+		for (PartieFini) {
+			valueP1 := handleClientRead(conn)
+			if (valueP1[:1] == "w" || valueP1[:1] == "l" ) {
+				handleClientWrite(conn2, "w1")
+				PartieFini = false
+				break
+			}
+			handleClientWrite(conn2, valueP1)
+	
+			valueP2 := handleClientRead(conn2)
+			if (valueP1[:1] == "w" || valueP1[:1] == "l" ) {
+				handleClientWrite(conn, "w1")
+				PartieFini = false
+				break
+			}
+			handleClientWrite(conn, valueP2)
+		}
+	}()
+	
 	defer conn.Close()
 	defer conn2.Close()
 

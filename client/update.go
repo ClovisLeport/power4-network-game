@@ -2,11 +2,14 @@ package main
 
 import (
 	"math/rand"
-	//"log"
+	"log"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	// "log"
 	// "net"
+	"fmt"
+	"strings"
+	"strconv"
 )
 // func handleConnectionWrite(c net.Conn, msg string) {
 
@@ -139,9 +142,12 @@ func (g *game) p1Update() (int, int) {
 			g.turn = p2Turn
 			lastXPositionPlayed = g.tokenPosition
 			lastYPositionPlayed = yPos
+			log.Println("xxxxxxxxxxxxxxxxxxxxxxxxxx"+string(lastXPositionPlayed))
+			handleConnectionWrite(g.connexion, string(string(lastXPositionPlayed)+"/"+string(lastYPositionPlayed)))
 		}
+		
 	}
-	handleConnectionWrite(g.connexion, string(string(lastXPositionPlayed)+"/"+string(lastYPositionPlayed)))
+
 	return lastXPositionPlayed, lastYPositionPlayed
 }
 
@@ -149,13 +155,23 @@ func (g *game) p1Update() (int, int) {
 // du moment où ce pion est joué.
 func (g *game) p2Update() (int, int) {
 	//recupere la position de l'autre joueur
-	position := rand.Intn(globalNumTilesX)
-	updated, yPos := g.updateGrid(p2Token, position)
-	for ; !updated; updated, yPos = g.updateGrid(p2Token, position) {
-		position = (position + 1) % globalNumTilesX
+	valueP1 := handleConnectionRead(g.connexion)
+	values := strings.Split(valueP1, "/")
+	x := strings.TrimSpace(values[0])
+
+	xValue, errX := strconv.Atoi(x)
+
+	if errX != nil {
+		fmt.Println("Erreur de conversion en nombre entier.")
+		return -1,-1
+	}
+
+	updated, yPos := g.updateGrid(p2Token, xValue)
+	for ; !updated; updated, yPos = g.updateGrid(p2Token, xValue) {
+		xValue = (xValue + 1) % globalNumTilesX
 	}
 	g.turn = p1Turn
-	return position, yPos
+	return xValue, yPos
 }
 
 // Mise à jour de l'état du jeu à l'écran des résultats.

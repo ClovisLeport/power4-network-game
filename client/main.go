@@ -58,14 +58,6 @@ func handleConnectionRead(c net.Conn) (value string) {
 
 }
 
-func createClient(conn net.Conn) (numJoueurRet string) {
-	
-	//defer conn.Close()
-	log.Println("Je suis connecté")
-	var numJoueur string = handleConnectionRead(conn)
-	
-	return numJoueur
-}
 
 // Création, paramétrage et lancement du jeu.
 func main() {
@@ -81,15 +73,15 @@ func main() {
 		log.Println("Dial error:", err)
 		return
 	}
-	createClient(conn)
 
+	log.Println("Je suis connecté")
 	// verifie si c'est le joueur 1 ou 2
-	numPlayer := handleConnectionRead(conn)[:1]
+	numPlayer:= handleConnectionRead(conn)[:1]
 	if ( numPlayer== "2") {
 		g.turn = p2Turn
 	}
-	log.Println("le tour de : " +string(g.turn))
-	
+
+	// verifie si les deux joueurs sont connéctés
 	go func() {
 		var Is2Player string = handleConnectionRead(conn)
 		if (string(Is2Player[:2]) == "2j") {
