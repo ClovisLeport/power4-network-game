@@ -52,6 +52,7 @@ func handleConnectionRead(c net.Conn) (value string) {
 	_, err := c.Read(in_buf)
 	if err != nil {
 		log.Fatal("Read error: ", err)
+
 	}
 	log.Println("Received", string(in_buf))
 	return string(in_buf)

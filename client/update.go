@@ -6,30 +6,23 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	// "log"
-	// "net"
+	"net"
 	"fmt"
 	"strings"
 	"strconv"
 )
-// func handleConnectionWrite(c net.Conn, msg string) {
+func handleConnectionReadU(c net.Conn) (value string) {
+	in_buf := make([]byte, 64, 256)
+	_, err := c.Read(in_buf)
+	if err != nil {
+		return "err"
+		
+	}
+	log.Println("Received", string(in_buf))
+	return string(in_buf)
 
-// 	_, err := c.Write([]byte(msg))
-// 	if err != nil {
-// 		log.Fatal("Write error: ", err)
-// 	}
-// 	log.Println("Sent: ", msg)
-// }
+}
 
-// func handleConnectionRead(c net.Conn) (value string) {
-// 	in_buf := make([]byte, 64, 256)
-// 	_, err := c.Read(in_buf)
-// 	if err != nil {
-// 		log.Fatal("Read error: ", err)
-// 	}
-// 	log.Println("Received", string(in_buf))
-// 	return string(in_buf)
-
-// }
 // Mise à jour de l'état du jeu en fonction des entrées au clavier.
 func (g *game) Update() error {
 
@@ -155,23 +148,27 @@ func (g *game) p1Update() (int, int) {
 // du moment où ce pion est joué.
 func (g *game) p2Update() (int, int) {
 	//recupere la position de l'autre joueur
-	valueP1 := handleConnectionRead(g.connexion)
-	values := strings.Split(valueP1, "/")
-	x := strings.TrimSpace(values[0])
-
-	xValue, errX := strconv.Atoi(x)
-
-	if errX != nil {
-		fmt.Println("Erreur de conversion en nombre entier.")
-		return -1,-1
+	valueP1 := handleConnectionReadU(g.connexion)
+	if (valueP1[:3] != "err") {
+		values := strings.Split(valueP1, "/")
+		x := strings.TrimSpace(values[0])
+	
+		xValue, errX := strconv.Atoi(x)
+	
+		if errX != nil {
+			fmt.Println("Erreur de conversion en nombre entier.")
+			return -1,-1
+		}
+	
+		updated, yPos := g.updateGrid(p2Token, xValue)
+		for ; !updated; updated, yPos = g.updateGrid(p2Token, xValue) {
+			xValue = (xValue + 1) % globalNumTilesX
+		}
+		g.turn = p1Turn
+		return xValue, yPos
 	}
-
-	updated, yPos := g.updateGrid(p2Token, xValue)
-	for ; !updated; updated, yPos = g.updateGrid(p2Token, xValue) {
-		xValue = (xValue + 1) % globalNumTilesX
-	}
-	g.turn = p1Turn
-	return xValue, yPos
+	return 0,0
+	
 }
 
 // Mise à jour de l'état du jeu à l'écran des résultats.
