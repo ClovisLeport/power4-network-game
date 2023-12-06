@@ -8,6 +8,7 @@ type game struct {
 	p1Color       int
 	p2Color       int
 	turn          int
+	numberPlayer  int
 	tokenPosition int
 	result        int
 }
@@ -15,7 +16,8 @@ type game struct {
 // Constantes pour représenter la séquence de jeu actuelle (écran titre,
 // écran de sélection des couleurs, jeu, écran de résultats).
 const (
-	titleState int = iota
+	waitState int = iota
+	titleState 
 	colorSelectState
 	playState
 	resultState

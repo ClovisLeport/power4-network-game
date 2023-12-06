@@ -14,6 +14,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 	screen.Fill(globalBackgroundColor)
 
 	switch g.gameState {
+	case waitState:
+		g.WaitDraw(screen)
 	case titleState:
 		g.titleDraw(screen)
 	case colorSelectState:
@@ -29,6 +31,16 @@ func (g *game) Draw(screen *ebiten.Image) {
 // Affichage des graphismes de l'écran titre.
 func (g game) titleDraw(screen *ebiten.Image) {
 	text.Draw(screen, "Puissance 4 en réseau", largeFont, 90, 150, globalTextColor)
+	text.Draw(screen, "Projet de programmation système", smallFont, 105, 190, globalTextColor)
+	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
+
+	if g.stateFrame >= globalBlinkDuration/3 {
+		text.Draw(screen, "Appuyez sur entrée", smallFont, 210, 500, globalTextColor)
+	}
+}
+
+func (g game) WaitDraw(screen *ebiten.Image) {
+	text.Draw(screen, "En attente d'autres joueurs", largeFont, 90, 150, globalTextColor)
 	text.Draw(screen, "Projet de programmation système", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
 

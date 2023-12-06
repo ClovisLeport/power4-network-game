@@ -2,7 +2,7 @@ package main
 
 import (
 	"math/rand"
-
+	//"log"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -13,6 +13,10 @@ func (g *game) Update() error {
 	g.stateFrame++
 
 	switch g.gameState {
+	case waitState:
+		if g.waitOtherPlayer() {
+			g.gameState++
+		} 
 	case titleState:
 		if g.titleUpdate() {
 			g.gameState++
@@ -52,7 +56,13 @@ func (g *game) titleUpdate() bool {
 	g.stateFrame = g.stateFrame % globalBlinkDuration
 	return inpututil.IsKeyJustPressed(ebiten.KeyEnter)
 }
+func (g *game) waitOtherPlayer() bool {
 
+	if (g.numberPlayer== 2) {
+		return true
+	}
+	return false
+}
 // Mise à jour de l'état du jeu lors de la sélection des couleurs.
 func (g *game) colorSelectUpdate() bool {
 
