@@ -2,6 +2,7 @@ package main
 import "net"
 // Structure de données pour représenter l'état courant du jeu.
 type game struct {
+	PlayerId	  int
 	gameState     int
 	stateFrame    int
 	grid          [globalNumTilesX][globalNumTilesY]int

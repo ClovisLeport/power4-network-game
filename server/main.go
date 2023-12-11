@@ -61,8 +61,20 @@ func server1() {
 	handleClientWrite(conn, "2j")
 	handleClientWrite(conn2, "2j")
 
+	//// SA NE DEPASSE PAS CET ENDROIT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! je ne sais pas si ca a envoye les 2j
+	// recupère la couleur des joueurs et renvoie
+	in_j1 := bufio.NewReader(conn)
+	msg_rcv1, err := in_j1.ReadString(byte('\n'))
+	out1 := bufio.NewWriter(conn2)
+	out1.WriteString(msg_rcv1)
+
+
+	in_j2 := bufio.NewReader(conn2)
+	msg_rcv2, err := in_j2.ReadString(byte('\n'))
+	out2 := bufio.NewWriter(conn)
+	out2.WriteString(msg_rcv2)
+
 	PartieFini := true
-	
 	go func() {
 		for (PartieFini) {
 			valueP1 := handleClientRead(conn)

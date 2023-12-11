@@ -1,27 +1,17 @@
 package main
 
 import (
-	"math/rand"
+	// "math/rand"
 	"log"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	// "log"
-	"net"
+	//"net"
 	"fmt"
 	"strings"
 	"strconv"
 )
-func handleConnectionReadU(c net.Conn) (value string) {
-	in_buf := make([]byte, 64, 256)
-	_, err := c.Read(in_buf)
-	if err != nil {
-		return "err"
-		
-	}
-	log.Println("Received", string(in_buf))
-	return string(in_buf)
 
-}
 
 // Mise à jour de l'état du jeu en fonction des entrées au clavier.
 func (g *game) Update() error {
@@ -72,13 +62,15 @@ func (g *game) titleUpdate() bool {
 	g.stateFrame = g.stateFrame % globalBlinkDuration
 	return inpututil.IsKeyJustPressed(ebiten.KeyEnter)
 }
-func (g *game) waitOtherPlayer() bool {
 
+// fonction qui verifie que les 2j sont connéctés
+func (g *game) waitOtherPlayer() bool {
 	if (g.numberPlayer== 2) {
 		return true
 	}
 	return false
 }
+
 // Mise à jour de l'état du jeu lors de la sélection des couleurs.
 func (g *game) colorSelectUpdate() bool {
 
@@ -102,13 +94,15 @@ func (g *game) colorSelectUpdate() bool {
 	}
 
 	g.p1Color = line*globalNumColorLine + col
-
+	
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-		g.p2Color = rand.Intn(globalNumColor)
-		if g.p2Color == g.p1Color {
-			g.p2Color = (g.p2Color + 1) % globalNumColor
+		
+		handleConnectionWrite(g.connexion, string("C"+string(g.p1Color)))
+		for (g.p2Color ==0) {
+			
 		}
 		return true
+		
 	}
 
 	return false
@@ -148,7 +142,9 @@ func (g *game) p1Update() (int, int) {
 // du moment où ce pion est joué.
 func (g *game) p2Update() (int, int) {
 	//recupere la position de l'autre joueur
-	valueP1 := handleConnectionReadU(g.connexion)
+	in_buf_j2:= make([]byte, 64, 256)
+	g.connexion.Read(in_buf_j2)
+	valueP1 := string(in_buf_j2)
 	if (valueP1[:3] != "err") {
 		values := strings.Split(valueP1, "/")
 		x := strings.TrimSpace(values[0])
