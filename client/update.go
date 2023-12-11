@@ -31,6 +31,10 @@ func (g *game) Update() error {
 		if g.colorSelectUpdate() {
 			g.gameState++
 		}
+	case waitColorState:
+		if g.waitColorUpdate() {
+			g.gameState++
+		} 
 	case playState:
 		g.tokenPosUpdate()
 		var lastXPositionPlayed int
@@ -65,7 +69,16 @@ func (g *game) titleUpdate() bool {
 
 // fonction qui verifie que les 2j sont connéctés
 func (g *game) waitOtherPlayer() bool {
+
 	if (g.numberPlayer== 2) {
+		return true
+	}
+	return false
+}
+
+func (g *game) waitColorUpdate() bool {
+
+	if (g.p2Color== 2) {
 		return true
 	}
 	return false
@@ -92,15 +105,13 @@ func (g *game) colorSelectUpdate() bool {
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 		line = (line - 1 + globalNumColorLine) % globalNumColorLine
 	}
-
+	
 	g.p1Color = line*globalNumColorLine + col
 	
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		
-		handleConnectionWrite(g.connexion, string("C"+string(g.p1Color)))
-		for (g.p2Color ==0) {
-			
-		}
+		handleConnectionWrite(g.connexion, string("C"+ strconv.Itoa(g.p1Color)))
+		g.p2Color =-1
 		return true
 		
 	}

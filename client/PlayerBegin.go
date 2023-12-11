@@ -4,35 +4,16 @@ import (
 	"log"
 	"net"
 	"strconv"
+	"bufio"
 )
-func handleConnectionWrite(c net.Conn, msg string) {
 
-	_, err := c.Write([]byte(msg))
-	if err != nil {
-		log.Fatal("Write error: ", err)
-	}
-	log.Println("Sent: ", msg)
-}
 
-func handleConnectionRead(c net.Conn) (value string) {
-	in_buf := make([]byte, 64, 256)
-	_, err := c.Read(in_buf)
-	if err != nil {
-		log.Fatal("Read error: ", err)
-
-	}
-	log.Println("Received", string(in_buf))
-	return string(in_buf)
-
-}
-
-func PlayerBegin(g game,c net.Conn) {
+func PlayerBegin(g *game,c net.Conn,in *bufio.Reader, out *bufio.Writer) {
 
 
 	// verifie si c'est le joueur 1 ou 2
-	in_buf_j := make([]byte, 64, 256)
-	c.Read(in_buf_j)
-	numPlayer:= string(in_buf_j)
+	c.Read(in)
+	numPlayer:= string(in)
 	if ( numPlayer== "2") {
 		g.turn = p2Turn
 		g.PlayerId = 2
@@ -42,19 +23,21 @@ func PlayerBegin(g game,c net.Conn) {
 	}
 
 	// verifie si les deux joueurs sont connéctés
-	in_buf_2j := make([]byte, 64, 256)
-	c.Read(in_buf_2j)
-	var Is2Player string = string(in_buf_2j)
+
+	c.Read(in)
+	var Is2Player string = string(in)
 	if (string(Is2Player[:2]) == "2j") {
 		log.Println()
+		log.Println(g.gameState)
 		g.numberPlayer+=2
 	}
 
-
 	// met la couleur de l'autre joueur
-	in_buf_c := make([]byte, 64, 256)
-	c.Read(in_buf_c)
-	p2Color:= string(in_buf_c)
+
+	c.Read(in)
+	p2Color:= string(in)
+	log.Print("couleur de p2 :")
+	log.Println(p2Color)
 	if (string(p2Color[0]) == "C") {
 		marks, _ := strconv.Atoi(string(p2Color[1]))
 		g.p2Color = marks

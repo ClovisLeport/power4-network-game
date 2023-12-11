@@ -21,6 +21,7 @@ const (
 	waitState int = iota
 	titleState 
 	colorSelectState
+	waitColorState
 	playState
 	resultState
 )

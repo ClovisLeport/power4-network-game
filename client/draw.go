@@ -20,6 +20,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.titleDraw(screen)
 	case colorSelectState:
 		g.colorSelectDraw(screen)
+	case waitColorState:
+		g.WaitColorDraw(screen)
 	case playState:
 		g.playDraw(screen)
 	case resultState:
@@ -40,15 +42,15 @@ func (g game) titleDraw(screen *ebiten.Image) {
 }
 
 func (g game) WaitDraw(screen *ebiten.Image) {
-	text.Draw(screen, "En attente d'autres joueurs", largeFont, 90, 150, globalTextColor)
+	text.Draw(screen, "En attente...", largeFont, 90, 150, globalTextColor)
 	text.Draw(screen, "Projet de programmation système", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
-
-	if g.stateFrame >= globalBlinkDuration/3 {
-		text.Draw(screen, "Appuyez sur entrée", smallFont, 210, 500, globalTextColor)
-	}
 }
 
+func (g game) WaitColorDraw(screen *ebiten.Image) {
+	text.Draw(screen, "En attente que l'autre joeur ait choisi", smallFont, 105, 190, globalTextColor)
+	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
+}
 // Affichage des graphismes de l'écran de sélection des couleurs des joueurs.
 func (g game) colorSelectDraw(screen *ebiten.Image) {
 	text.Draw(screen, "Quelle couleur pour vos pions ?", smallFont, 110, 80, globalTextColor)

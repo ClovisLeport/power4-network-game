@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net"
-
+"bufio"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"golang.org/x/image/font/opentype"
@@ -57,8 +57,14 @@ func main() {
 	}
 	log.Println("Je suis connecté")
 
+	// creation des bufio reader et writer pour le client
+	in := bufio.NewReader(conn)
+	out := bufio.NewWriter(conn)
+
 	// fonction qui verifie que les deux joueurs sont connéctés et ont choisi leur couleurs
-	go PlayerBegin(g, conn)
+	
+
+	go PlayerBegin(&g, conn,in,out)
 
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
