@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-
-
 func server1() {
 	listener, err := net.Listen("tcp", "localhost:8080")
 	if err != nil {
@@ -26,11 +24,10 @@ func server1() {
 	// creation bufio writer et reader pour client 1
 	in1 := bufio.NewReader(conn)
 	out1 := bufio.NewWriter(conn)
-	
+
 	// envoie au client 1 qu'il est le 1
-	out1.WriteString("1")
-
-
+	out1.WriteString("1\n")
+	out1.Flush()
 	conn2, err := listener.Accept()
 	if err != nil {
 		log.Println("accept error:", err)
@@ -41,28 +38,27 @@ func server1() {
 	in2 := bufio.NewReader(conn2)
 	out2 := bufio.NewWriter(conn2)
 	// envoie au client 1 qu'il est le 2
-	out1.WriteString("2")
-
+	out2.WriteString("2\n")
+	out2.Flush()
 	time.Sleep(1 * time.Second)
 
 	// dit aux deux joueurs que les deux sont connéctés
-	out1.WriteString("2j")
-	out2.WriteString("2j")
 
+	out1.WriteString("2j\n")
+	out1.Flush()
 
+	out2.WriteString("2j\n")
+	out2.Flush()
 	// recupère la couleur des joueurs et renvoie
 
 	msg_rcv1, err := in1.ReadString(byte('\n'))
 	log.Print("couleur choisi")
 	log.Println(msg_rcv1)
 	out2.WriteString(msg_rcv1)
-
+	out2.Flush()
 	msg_rcv2, err := in2.ReadString(byte('\n'))
 	out1.WriteString(msg_rcv2)
-
-
-
-
+	out1.Flush()
 	//PartieFini := true
 	// go func() {
 	// 	for (PartieFini) {
@@ -73,7 +69,7 @@ func server1() {
 	// 			break
 	// 		}
 	// 		handleClientWrite(conn2, valueP1)
-	
+
 	// 		valueP2 := handleClientRead(conn2)
 	// 		if (valueP1[:1] == "w" || valueP1[:1] == "l" ) {
 	// 			handleClientWrite(conn, "w1")
@@ -83,7 +79,7 @@ func server1() {
 	// 		handleClientWrite(conn, valueP2)
 	// 	}
 	// }()
-	
+
 	// defer conn.Close()
 	// defer conn2.Close()
 

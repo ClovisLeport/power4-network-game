@@ -1,5 +1,6 @@
 package main
-import "net"
+import ("net"
+"bufio")
 // Structure de données pour représenter l'état courant du jeu.
 type game struct {
 	PlayerId	  int
@@ -13,6 +14,8 @@ type game struct {
 	tokenPosition int
 	result        int
 	connexion 	  net.Conn
+	in 			  *bufio.Reader
+	out 		  *bufio.Writer
 }
 
 // Constantes pour représenter la séquence de jeu actuelle (écran titre,

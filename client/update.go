@@ -2,16 +2,17 @@ package main
 
 import (
 	// "math/rand"
-	"log"
+	//"log"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+
 	// "log"
 	//"net"
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
+	//"bufio"
 )
-
 
 // Mise à jour de l'état du jeu en fonction des entrées au clavier.
 func (g *game) Update() error {
@@ -22,7 +23,7 @@ func (g *game) Update() error {
 	case waitState:
 		if g.waitOtherPlayer() {
 			g.gameState++
-		} 
+		}
 	case titleState:
 		if g.titleUpdate() {
 			g.gameState++
@@ -34,7 +35,7 @@ func (g *game) Update() error {
 	case waitColorState:
 		if g.waitColorUpdate() {
 			g.gameState++
-		} 
+		}
 	case playState:
 		g.tokenPosUpdate()
 		var lastXPositionPlayed int
@@ -70,7 +71,7 @@ func (g *game) titleUpdate() bool {
 // fonction qui verifie que les 2j sont connéctés
 func (g *game) waitOtherPlayer() bool {
 
-	if (g.numberPlayer== 2) {
+	if g.numberPlayer == 2 {
 		return true
 	}
 	return false
@@ -78,7 +79,7 @@ func (g *game) waitOtherPlayer() bool {
 
 func (g *game) waitColorUpdate() bool {
 
-	if (g.p2Color== 2) {
+	if g.p2Color == 2 {
 		return true
 	}
 	return false
@@ -105,15 +106,14 @@ func (g *game) colorSelectUpdate() bool {
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 		line = (line - 1 + globalNumColorLine) % globalNumColorLine
 	}
-	
+
 	g.p1Color = line*globalNumColorLine + col
-	
+
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-		
-		handleConnectionWrite(g.connexion, string("C"+ strconv.Itoa(g.p1Color)))
-		g.p2Color =-1
+		g.out.WriteString(string("C" + strconv.Itoa(g.p1Color)))
+		g.p2Color = -1
 		return true
-		
+
 	}
 
 	return false
@@ -140,10 +140,10 @@ func (g *game) p1Update() (int, int) {
 			g.turn = p2Turn
 			lastXPositionPlayed = g.tokenPosition
 			lastYPositionPlayed = yPos
-			log.Println("xxxxxxxxxxxxxxxxxxxxxxxxxx"+string(lastXPositionPlayed))
-			handleConnectionWrite(g.connexion, string(string(lastXPositionPlayed)+"/"+string(lastYPositionPlayed)))
+			g.out.WriteString(string(string(lastXPositionPlayed) + "/" + string(lastYPositionPlayed)))
+
 		}
-		
+
 	}
 
 	return lastXPositionPlayed, lastYPositionPlayed
@@ -153,20 +153,20 @@ func (g *game) p1Update() (int, int) {
 // du moment où ce pion est joué.
 func (g *game) p2Update() (int, int) {
 	//recupere la position de l'autre joueur
-	in_buf_j2:= make([]byte, 64, 256)
+	in_buf_j2 := make([]byte, 64, 256)
 	g.connexion.Read(in_buf_j2)
 	valueP1 := string(in_buf_j2)
-	if (valueP1[:3] != "err") {
+	if valueP1[:3] != "err" {
 		values := strings.Split(valueP1, "/")
 		x := strings.TrimSpace(values[0])
-	
+
 		xValue, errX := strconv.Atoi(x)
-	
+
 		if errX != nil {
 			fmt.Println("Erreur de conversion en nombre entier.")
-			return -1,-1
+			return -1, -1
 		}
-	
+
 		updated, yPos := g.updateGrid(p2Token, xValue)
 		for ; !updated; updated, yPos = g.updateGrid(p2Token, xValue) {
 			xValue = (xValue + 1) % globalNumTilesX
@@ -174,8 +174,8 @@ func (g *game) p2Update() (int, int) {
 		g.turn = p1Turn
 		return xValue, yPos
 	}
-	return 0,0
-	
+	return 0, 0
+
 }
 
 // Mise à jour de l'état du jeu à l'écran des résultats.

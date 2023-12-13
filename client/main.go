@@ -1,9 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"net"
-"bufio"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"golang.org/x/image/font/opentype"
@@ -38,8 +39,6 @@ func init() {
 	offScreenImage = ebiten.NewImage(globalWidth, globalHeight)
 }
 
-
-
 // Création, paramétrage et lancement du jeu.
 func main() {
 
@@ -50,7 +49,7 @@ func main() {
 
 	// connexion au server
 	conn, err := net.Dial("tcp", "localhost:8080")
-	g.connexion = conn
+
 	if err != nil {
 		log.Println("Dial error:", err)
 		return
@@ -58,21 +57,15 @@ func main() {
 	log.Println("Je suis connecté")
 
 	// creation des bufio reader et writer pour le client
-	in := bufio.NewReader(conn)
-	out := bufio.NewWriter(conn)
+	g.in = bufio.NewReader(conn)
+	g.out = bufio.NewWriter(conn)
 
 	// fonction qui verifie que les deux joueurs sont connéctés et ont choisi leur couleurs
-	
 
-	go PlayerBegin(&g, conn,in,out)
+	go PlayerBegin(&g)
 
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
 	}
-	
-
-
-
-	
 
 }
