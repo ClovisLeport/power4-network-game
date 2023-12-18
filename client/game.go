@@ -1,9 +1,13 @@
 package main
-import ("net"
-"bufio")
+
+import (
+	"bufio"
+	"net"
+)
+
 // Structure de données pour représenter l'état courant du jeu.
 type game struct {
-	PlayerId	  int
+	PlayerId      int
 	gameState     int
 	stateFrame    int
 	grid          [globalNumTilesX][globalNumTilesY]int
@@ -13,19 +17,25 @@ type game struct {
 	numberPlayer  int
 	tokenPosition int
 	result        int
-	connexion 	  net.Conn
-	in 			  *bufio.Reader
-	out 		  *bufio.Writer
+	connexion     net.Conn
+	in            *bufio.Reader
+	out           *bufio.Writer
+	selectedColor int
+	haveListen1   bool
+	haveListen2   bool
+	isFirstTour   bool
+	isFirstGame   bool
 }
 
 // Constantes pour représenter la séquence de jeu actuelle (écran titre,
 // écran de sélection des couleurs, jeu, écran de résultats).
 const (
 	waitState int = iota
-	titleState 
+	titleState
 	colorSelectState
 	waitColorState
 	playState
+	//WaitPlayState
 	resultState
 )
 

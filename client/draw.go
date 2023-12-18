@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
@@ -24,6 +25,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.WaitColorDraw(screen)
 	case playState:
 		g.playDraw(screen)
+	// case WaitPlayState:
+	// 	g.WaitplayDraw(screen)
 	case resultState:
 		g.resultDraw(screen)
 	}
@@ -32,6 +35,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 // Affichage des graphismes de l'écran titre.
 func (g game) titleDraw(screen *ebiten.Image) {
+	text.Draw(screen, strconv.Itoa(g.numberPlayer)+"/2 joueurs connéctés", smallFont, 0, 25, globalTextColor)
 	text.Draw(screen, "Puissance 4 en réseau", largeFont, 90, 150, globalTextColor)
 	text.Draw(screen, "Projet de programmation système", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
@@ -41,8 +45,14 @@ func (g game) titleDraw(screen *ebiten.Image) {
 	}
 }
 
+//	func (g game) WaitplayDraw(screen *ebiten.Image) {
+//		g.drawGrid(screen)
+//		text.Draw(screen, "c'est à l'autre joueur de jouer, attendez", smallFont, 50, 230, globalTextColor)
+//		vector.DrawFilledCircle(screen, float32(globalTileSize/2+g.tokenPosition*globalTileSize), float32(globalTileSize/2), globalTileSize/2-globalCircleMargin, globalTokenColors[g.p1Color], true)
+//	}
 func (g game) WaitDraw(screen *ebiten.Image) {
-	text.Draw(screen, "En attente...", largeFont, 90, 150, globalTextColor)
+	text.Draw(screen, strconv.Itoa(g.numberPlayer)+"/2 joueurs connéctés", smallFont, 0, 25, globalTextColor)
+	text.Draw(screen, "En attente...", largeFont, 110, 150, globalTextColor)
 	text.Draw(screen, "Projet de programmation système", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
 }
@@ -51,8 +61,10 @@ func (g game) WaitColorDraw(screen *ebiten.Image) {
 	text.Draw(screen, "En attente que l'autre joeur ait choisi", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
 }
+
 // Affichage des graphismes de l'écran de sélection des couleurs des joueurs.
 func (g game) colorSelectDraw(screen *ebiten.Image) {
+
 	text.Draw(screen, "Quelle couleur pour vos pions ?", smallFont, 110, 80, globalTextColor)
 
 	line := 0
@@ -62,7 +74,7 @@ func (g game) colorSelectDraw(screen *ebiten.Image) {
 		xPos := (globalNumTilesX-globalNumColorCol)/2 + col
 		yPos := (globalNumTilesY-globalNumColorLine)/2 + line
 
-		if numColor == g.p1Color {
+		if numColor == g.selectedColor {
 			vector.DrawFilledCircle(screen, float32(globalTileSize/2+xPos*globalTileSize), float32(globalTileSize+globalTileSize/2+yPos*globalTileSize), globalTileSize/2, globalSelectColor, true)
 		}
 
@@ -80,7 +92,16 @@ func (g game) colorSelectDraw(screen *ebiten.Image) {
 func (g game) playDraw(screen *ebiten.Image) {
 	g.drawGrid(screen)
 
-	vector.DrawFilledCircle(screen, float32(globalTileSize/2+g.tokenPosition*globalTileSize), float32(globalTileSize/2), globalTileSize/2-globalCircleMargin, globalTokenColors[g.p1Color], true)
+	if g.turn == 1 && g.PlayerId == 2 {
+		text.Draw(screen, "Attendez que l'autre joueur joue ...", smallFont, 80, 230, globalTextColor)
+	} else if g.turn == 2 && g.PlayerId == 1 {
+		text.Draw(screen, "Attendez que l'autre joueur joue ...", smallFont, 80, 230, globalTextColor)
+	}
+	if g.PlayerId == 2 {
+		vector.DrawFilledCircle(screen, float32(globalTileSize/2+g.tokenPosition*globalTileSize), float32(globalTileSize/2), globalTileSize/2-globalCircleMargin, globalTokenColors[g.p2Color], true)
+	} else {
+		vector.DrawFilledCircle(screen, float32(globalTileSize/2+g.tokenPosition*globalTileSize), float32(globalTileSize/2), globalTileSize/2-globalCircleMargin, globalTokenColors[g.p1Color], true)
+	}
 }
 
 // Affichage des graphismes à l'écran des résultats.

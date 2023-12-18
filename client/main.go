@@ -41,27 +41,23 @@ func init() {
 
 // Création, paramétrage et lancement du jeu.
 func main() {
-
 	g := game{}
-
 	ebiten.SetWindowTitle("Programmation système : projet puissance 4")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	// connexion au server
 	conn, err := net.Dial("tcp", "localhost:8080")
-
 	if err != nil {
 		log.Println("Dial error:", err)
 		return
 	}
 	log.Println("Je suis connecté")
-
+	g.numberPlayer++
 	// creation des bufio reader et writer pour le client
 	g.in = bufio.NewReader(conn)
 	g.out = bufio.NewWriter(conn)
-
+	g.isFirstGame = true
 	// fonction qui verifie que les deux joueurs sont connéctés et ont choisi leur couleurs
-
 	go PlayerBegin(&g)
 
 	if err := ebiten.RunGame(&g); err != nil {
