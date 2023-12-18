@@ -47,7 +47,11 @@ func (g *game) Update() error {
 					g.haveListen1 = true
 					// routine qui attend le message de l'autre joueur
 					go func() {
-						msg_rcv_Pos, _ := g.in.ReadString(byte('\n'))
+						msg_rcv_Pos, err := g.in.ReadString(byte('\n'))
+
+						if err != nil {
+							log.Fatal("l'autre joueur s'est deconnecté")
+						}
 						pOthPos := string(msg_rcv_Pos)
 						log.Println("j'ai recu : " + pOthPos)
 						xValue, errX := strconv.Atoi(string(pOthPos[0]))
@@ -80,7 +84,10 @@ func (g *game) Update() error {
 				g.haveListen2 = true
 				// routine qui attend le message de l'autre joueur
 				go func() {
-					msg_rcv_Pos, _ := g.in.ReadString(byte('\n'))
+					msg_rcv_Pos, err := g.in.ReadString(byte('\n'))
+					if err != nil {
+						log.Fatal("l'autre joueur s'est deconnecté")
+					}
 					pOthPos := string(msg_rcv_Pos)
 					log.Println("j'ai recu : " + pOthPos)
 					xValue, _ := strconv.Atoi(string(pOthPos[0]))
@@ -153,32 +160,64 @@ func (g *game) colorSelectUpdate() bool {
 	line := g.selectedColor / globalNumColorLine
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
-		col = (col + 1) % globalNumColorCol
+		colorSelec := line*globalNumColorLine + ((col + 1) % globalNumColorCol)
+		if (g.PlayerId == 2 && colorSelec == g.p1Color) || (g.PlayerId == 1 && colorSelec == g.p2Color) {
+			col = (col + 2) % globalNumColorCol
+		} else {
+			col = (col + 1) % globalNumColorCol
+		}
+
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
-		col = (col - 1 + globalNumColorCol) % globalNumColorCol
+		colorSelec := line*globalNumColorLine + ((col - 1 + globalNumColorCol) % globalNumColorCol)
+		if (g.PlayerId == 2 && colorSelec == g.p1Color) || (g.PlayerId == 1 && colorSelec == g.p2Color) {
+			col = (col - 2 + globalNumColorCol) % globalNumColorCol
+		} else {
+			col = (col - 1 + globalNumColorCol) % globalNumColorCol
+		}
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
-		line = (line + 1) % globalNumColorLine
+		colorSelec := ((line+1)%globalNumColorLine)*globalNumColorLine + col
+		if (g.PlayerId == 2 && colorSelec == g.p1Color) || (g.PlayerId == 1 && colorSelec == g.p2Color) {
+			line = (line + 2) % globalNumColorLine
+		} else {
+			line = (line + 1) % globalNumColorLine
+		}
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
-		line = (line - 1 + globalNumColorLine) % globalNumColorLine
+		colorSelec := ((line-1+globalNumColorLine)%globalNumColorLine)*globalNumColorLine + col
+		if (g.PlayerId == 2 && colorSelec == g.p1Color) || (g.PlayerId == 1 && colorSelec == g.p2Color) {
+			line = (line - 2 + globalNumColorLine) % globalNumColorLine
+		} else {
+			line = (line - 1 + globalNumColorLine) % globalNumColorLine
+		}
+	}
+
+	if (g.PlayerId == 2 && (line*globalNumColorLine+col) == g.p1Color) || (g.PlayerId == 1 && (line*globalNumColorLine+col) == g.p2Color) {
+		g.selectedColor = line*globalNumColorLine + ((col + 1) % globalNumColorCol)
+	} else {
+		g.selectedColor = line*globalNumColorLine + col
 	}
 
 	g.selectedColor = line*globalNumColorLine + col
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-		if g.PlayerId == 2 {
+
+		if g.PlayerId == 2 && g.selectedColor != g.p1Color {
 			g.p2Color = g.selectedColor
-		} else {
+			g.out.WriteString("C" + strconv.Itoa(g.selectedColor) + "\n")
+			g.out.Flush()
+
+			return true
+		} else if g.PlayerId == 1 && g.selectedColor != g.p2Color {
 			g.p1Color = g.selectedColor
+			g.out.WriteString("C" + strconv.Itoa(g.selectedColor) + "\n")
+			g.out.Flush()
+			return true
 		}
-		g.out.WriteString("C" + strconv.Itoa(g.selectedColor) + "\n")
-		g.out.Flush()
-		return true
 
 	}
 

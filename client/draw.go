@@ -35,7 +35,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 // Affichage des graphismes de l'écran titre.
 func (g game) titleDraw(screen *ebiten.Image) {
-	text.Draw(screen, strconv.Itoa(g.numberPlayer)+"/2 joueurs connéctés", smallFont, 0, 25, globalTextColor)
+
 	text.Draw(screen, "Puissance 4 en réseau", largeFont, 90, 150, globalTextColor)
 	text.Draw(screen, "Projet de programmation système", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
@@ -52,7 +52,7 @@ func (g game) titleDraw(screen *ebiten.Image) {
 //	}
 func (g game) WaitDraw(screen *ebiten.Image) {
 	text.Draw(screen, strconv.Itoa(g.numberPlayer)+"/2 joueurs connéctés", smallFont, 0, 25, globalTextColor)
-	text.Draw(screen, "En attente...", largeFont, 110, 150, globalTextColor)
+	text.Draw(screen, "En attente...", largeFont, 200, 150, globalTextColor)
 	text.Draw(screen, "Projet de programmation système", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
 }
@@ -64,7 +64,7 @@ func (g game) WaitColorDraw(screen *ebiten.Image) {
 
 // Affichage des graphismes de l'écran de sélection des couleurs des joueurs.
 func (g game) colorSelectDraw(screen *ebiten.Image) {
-
+	text.Draw(screen, strconv.Itoa(g.numberPlayer)+"/2 joueurs connéctés", smallFont, 0, 25, globalTextColor)
 	text.Draw(screen, "Quelle couleur pour vos pions ?", smallFont, 110, 80, globalTextColor)
 
 	line := 0
@@ -77,8 +77,11 @@ func (g game) colorSelectDraw(screen *ebiten.Image) {
 		if numColor == g.selectedColor {
 			vector.DrawFilledCircle(screen, float32(globalTileSize/2+xPos*globalTileSize), float32(globalTileSize+globalTileSize/2+yPos*globalTileSize), globalTileSize/2, globalSelectColor, true)
 		}
-
-		vector.DrawFilledCircle(screen, float32(globalTileSize/2+xPos*globalTileSize), float32(globalTileSize+globalTileSize/2+yPos*globalTileSize), globalTileSize/2-globalCircleMargin, globalTokenColors[numColor], true)
+		if numColor == g.p1Color && g.PlayerId == 2 || numColor == g.p2Color && g.PlayerId == 1 {
+			vector.DrawFilledCircle(screen, float32(globalTileSize/2+xPos*globalTileSize), float32(globalTileSize+globalTileSize/2+yPos*globalTileSize), globalTileSize/2-globalCircleMargin, color.NRGBA{R: 50, G: 50, B: 50, A: 50}, true)
+		} else {
+			vector.DrawFilledCircle(screen, float32(globalTileSize/2+xPos*globalTileSize), float32(globalTileSize+globalTileSize/2+yPos*globalTileSize), globalTileSize/2-globalCircleMargin, globalTokenColors[numColor], true)
+		}
 
 		col++
 		if col >= globalNumColorCol {

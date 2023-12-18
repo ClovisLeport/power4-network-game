@@ -34,25 +34,29 @@ func PlayerBegin(g *game) {
 
 	msg_rcv_2j, _ := g.in.ReadString(byte('\n'))
 	var Is2Player string = string(msg_rcv_2j)
-	log.Println("j'ai recu N ? " + Is2Player)
+
 	if string(Is2Player[:2]) == "2j" || string(Is2Player[0]) == "N" {
 		g.numberPlayer++
 	}
 
 	// recoit et met la couleur de l'autre joueur
-	msg_rcv_color, _ := g.in.ReadString(byte('\n'))
+	msg_rcv_color, err := g.in.ReadString(byte('\n'))
 	pColor := string(msg_rcv_color)
-	log.Println("j'ai recu la couleur ? " + pColor)
+	if err != nil {
+		log.Println("sssssssssss")
+		g.numberPlayer--
+	} else {
+		log.Println("j'ai recu la couleur ? " + pColor)
+		// message commence par C pour dire que c'est la couleur qui est recu
+		if string(pColor[0]) == "C" {
+			marks, _ := strconv.Atoi(string(pColor[1]))
+			if g.PlayerId == 1 {
+				g.p2Color = marks
+			} else {
+				g.p1Color = marks
+			}
 
-	// message commence par C pour dire que c'est la couleur qui est recu
-	if string(pColor[0]) == "C" {
-		marks, _ := strconv.Atoi(string(pColor[1]))
-		if g.PlayerId == 1 {
-			g.p2Color = marks
-		} else {
-			g.p1Color = marks
 		}
-
 	}
 
 }
