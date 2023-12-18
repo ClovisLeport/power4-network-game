@@ -108,6 +108,7 @@ func (g *game) Update() error {
 
 	case resultState:
 		if g.resultUpdate() {
+			go PlayerBegin(g)
 			g.reset1()
 			g.reset()
 			g.gameState = waitState
@@ -128,7 +129,7 @@ func (g *game) titleUpdate() bool {
 func (g *game) waitOtherPlayer() bool {
 
 	if !g.isFirstGame {
-		go PlayerBeginNew(g)
+
 		g.isFirstGame = true
 	}
 	if g.numberPlayer == 2 {

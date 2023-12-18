@@ -12,7 +12,6 @@ func server1(conn net.Conn, conn2 net.Conn, in1 *bufio.Reader, out1 *bufio.Write
 	if !isFirstGame {
 		in1.ReadString(byte('\n'))
 		msg_rcv1, _ := in1.ReadString(byte('\n'))
-		log.Println("j'envoie et j'ai recu : " + string(msg_rcv1))
 		out2.WriteString(msg_rcv1)
 		out2.Flush()
 
@@ -22,6 +21,7 @@ func server1(conn net.Conn, conn2 net.Conn, in1 *bufio.Reader, out1 *bufio.Write
 	}
 	// recupère la couleur des joueurs et renvoie
 	msg_rcv1, _ := in1.ReadString(byte('\n'))
+	log.Println("j'ai recu et j'envoie:" + msg_rcv1)
 	out2.WriteString(msg_rcv1)
 	out2.Flush()
 
@@ -32,7 +32,7 @@ func server1(conn net.Conn, conn2 net.Conn, in1 *bufio.Reader, out1 *bufio.Write
 	PartieFini := true
 	for PartieFini {
 		msg_rcv1, _ := in1.ReadString(byte('\n'))
-		log.Println("j'ai recu 1 : " + msg_rcv1)
+		//log.Println("j'ai recu 1 : " + msg_rcv1)
 		out2.WriteString(msg_rcv1)
 		out2.Flush()
 		if string(msg_rcv1[1]) == "W" || string(msg_rcv1[1]) == "L" || string(msg_rcv1[1]) == "E" {
@@ -41,7 +41,7 @@ func server1(conn net.Conn, conn2 net.Conn, in1 *bufio.Reader, out1 *bufio.Write
 		}
 
 		msg_rcv2, _ := in2.ReadString(byte('\n'))
-		log.Println("j'ai recu 2: " + msg_rcv2)
+		//log.Println("j'ai recu 2: " + msg_rcv2)
 		out1.WriteString(msg_rcv2)
 		out1.Flush()
 
@@ -52,7 +52,7 @@ func server1(conn net.Conn, conn2 net.Conn, in1 *bufio.Reader, out1 *bufio.Write
 		}
 
 	}
-	log.Println("je sors")
+
 	server1(conn, conn2, in1, out1, in2, out2, false)
 	// defer conn.Close()
 	// defer conn2.Close()
