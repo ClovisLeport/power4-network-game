@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 )
@@ -8,6 +9,7 @@ import (
 func PlayerBegin(g *game) {
 
 	// verifie si c'est le joueur 1 ou 2
+
 	if g.isFirstGame == true {
 
 		msg_rcv_num, _ := g.in.ReadString(byte('\n'))
@@ -18,7 +20,11 @@ func PlayerBegin(g *game) {
 			g.PlayerId = 1
 		}
 	} else {
-		g.out.WriteString("N\n")
+		_, err := g.out.WriteString("N\n")
+		if err != nil {
+			log.Fatal("impossible d'envoyer N")
+		}
+		fmt.Println("j'envoi N")
 		g.out.Flush()
 	}
 
@@ -34,7 +40,7 @@ func PlayerBegin(g *game) {
 
 	msg_rcv_2j, _ := g.in.ReadString(byte('\n'))
 	var Is2Player string = string(msg_rcv_2j)
-
+	log.Println("j'ai recu pour la 2eme conn : " + Is2Player)
 	if string(Is2Player[:2]) == "2j" || string(Is2Player[0]) == "N" {
 		g.numberPlayer++
 	}
@@ -43,7 +49,6 @@ func PlayerBegin(g *game) {
 	msg_rcv_color, err := g.in.ReadString(byte('\n'))
 	pColor := string(msg_rcv_color)
 	if err != nil {
-		log.Println("sssssssssss")
 		g.numberPlayer--
 	} else {
 		log.Println("j'ai recu la couleur ? " + pColor)

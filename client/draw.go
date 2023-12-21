@@ -58,7 +58,7 @@ func (g game) WaitDraw(screen *ebiten.Image) {
 }
 
 func (g game) WaitColorDraw(screen *ebiten.Image) {
-	text.Draw(screen, "En attente que l'autre joeur ait choisi", smallFont, 105, 190, globalTextColor)
+	text.Draw(screen, "En attente que l'autre joueur ait choisi", smallFont, 105, 190, globalTextColor)
 	text.Draw(screen, "Année 2023-2024", smallFont, 210, 230, globalTextColor)
 }
 

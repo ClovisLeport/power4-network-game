@@ -10,20 +10,29 @@ import (
 func server1(listener net.Listener, in1 *bufio.Reader, out1 *bufio.Writer, in2 *bufio.Reader, out2 *bufio.Writer, isFirstGame bool) {
 	// envoie au joueur si l'autre est pret à faire une deuxième partie
 	if !isFirstGame {
-		in1.ReadString(byte('\n'))
-		msg_rcv1, err := in1.ReadString(byte('\n'))
-		if err != nil {
-			log.Fatal("client1 deconnécté")
-		}
-		out2.WriteString(msg_rcv1)
-		out2.Flush()
+		go func() {
+			msg_rcv1 := ""
+			for msg_rcv1 != "N\n" {
+				in1.ReadString(byte('\n'))
+				msg_rcv1, _ = in1.ReadString(byte('\n'))
+				log.Println(msg_rcv1)
 
-		msg_rcv2, err := in2.ReadString(byte('\n'))
-		if err != nil {
-			log.Fatal("client2 deconnécté")
+			}
+			log.Println("j'ai recu N 1" + msg_rcv1)
+			out2.WriteString(msg_rcv1)
+			out2.Flush()
+
+		}()
+
+		msg_rcv2 := ""
+		for msg_rcv2 != "N\n" {
+			msg_rcv2, _ = in2.ReadString(byte('\n'))
 		}
+
+		log.Println("j'ai recu N 2" + msg_rcv2)
 		out1.WriteString(msg_rcv2)
 		out1.Flush()
+
 	}
 	// permet de ne pas lancer le jeu tant que les deux couleur on pas été lancés
 	bothColorDecide := 0
@@ -44,6 +53,7 @@ func server1(listener net.Listener, in1 *bufio.Reader, out1 *bufio.Writer, in2 *
 	if err != nil {
 		log.Fatal("client2 deconnécté")
 	}
+	log.Println("j'ai recu : " + msg_rcv2)
 	out1.WriteString(msg_rcv2)
 	out1.Flush()
 
@@ -51,34 +61,37 @@ func server1(listener net.Listener, in1 *bufio.Reader, out1 *bufio.Writer, in2 *
 	for PartieFini {
 		if bothColorDecide == 1 {
 			msg_rcv1, err := in1.ReadString(byte('\n'))
+
 			if err != nil {
 				log.Fatal("client1 deconnécté")
 			}
+
+			log.Println("j'ai recu 1: " + msg_rcv1)
 			//log.Println("j'ai recu 1 : " + msg_rcv1)
 			out2.WriteString(msg_rcv1)
 			out2.Flush()
 			if string(msg_rcv1[1]) == "W" || string(msg_rcv1[1]) == "L" || string(msg_rcv1[1]) == "E" {
 				PartieFini = false
-				break
+
 			}
 
 			msg_rcv2, err := in2.ReadString(byte('\n'))
 			if err != nil {
 				log.Fatal("client2 deconnécté")
 			}
+			log.Println("j'ai recu 2 : " + msg_rcv2)
+
 			//log.Println("j'ai recu 2: " + msg_rcv2)
 			out1.WriteString(msg_rcv2)
 			out1.Flush()
 
 			if string(msg_rcv2[1]) == "W" || string(msg_rcv2[1]) == "L" || string(msg_rcv2[1]) == "E" {
 				PartieFini = false
-				break
 
 			}
 		}
 
 	}
-
 	server1(listener, in1, out1, in2, out2, false)
 	// defer conn.Close()
 	// defer conn2.Close()
@@ -89,7 +102,6 @@ func connection(listener net.Listener) (*bufio.Reader, *bufio.Writer) {
 	if err != nil {
 		log.Fatal("accept error:", err)
 	}
-	log.Println("Le client1 s'est connecté")
 	in1 := bufio.NewReader(conn)
 	out1 := bufio.NewWriter(conn)
 	return in1, out1

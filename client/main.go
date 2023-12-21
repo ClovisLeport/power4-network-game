@@ -51,6 +51,7 @@ func main() {
 		log.Println("Dial error:", err)
 		return
 	}
+
 	log.Println("Je suis connecté")
 	g.numberPlayer++
 	// creation des bufio reader et writer pour le client
