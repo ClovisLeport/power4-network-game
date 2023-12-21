@@ -202,7 +202,7 @@ func (g *game) colorSelectUpdate() bool {
 		g.selectedColor = line*globalNumColorLine + col
 	}
 
-	g.selectedColor = line*globalNumColorLine + col
+
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 
